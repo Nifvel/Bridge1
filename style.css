@@ -389,7 +389,7 @@ header h1 {
 /* Responsiv design */
 @media (max-width: 1200px) {
     .player-north, .player-south {
-        width: 250px;
+        width: 500px;
     }
     
     .center-area {
