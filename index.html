@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge - Spela mot Robotar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🃏 Bridge</h1>
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="label">Budgivning:</span>
+                    <span id="bidding-phase">Ingen budgivning</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Kontrakt:</span>
+                    <span id="contract">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Trumf:</span>
+                    <span id="trump-suit">-</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Budgivningsfönster (ovanför spelbrädet) -->
+        <div class="bidding-area" id="bidding-area">
+            <div class="bidding-controls">
+                <h3>Budgivning</h3>
+                <div class="bid-buttons">
+                    <button class="bid-btn" data-bid="pass">Pass</button>
+                    <button class="bid-btn" data-bid="1C">1♣</button>
+                    <button class="bid-btn" data-bid="1D">1♦</button>
+                    <button class="bid-btn" data-bid="1H">1♥</button>
+                    <button class="bid-btn" data-bid="1S">1♠</button>
+                    <button class="bid-btn" data-bid="1NT">1NT</button>
+                    <button class="bid-btn" data-bid="2C">2♣</button>
+                    <button class="bid-btn" data-bid="2D">2♦</button>
+                    <button class="bid-btn" data-bid="2H">2♥</button>
+                    <button class="bid-btn" data-bid="2S">2♠</button>
+                    <button class="bid-btn" data-bid="2NT">2NT</button>
+                    <button class="bid-btn" data-bid="3C">3♣</button>
+                    <button class="bid-btn" data-bid="3D">3♦</button>
+                    <button class="bid-btn" data-bid="3H">3♥</button>
+                    <button class="bid-btn" data-bid="3S">3♠</button>
+                    <button class="bid-btn" data-bid="3NT">3NT</button>
+                    <button class="bid-btn" data-bid="4C">4♣</button>
+                    <button class="bid-btn" data-bid="4D">4♦</button>
+                    <button class="bid-btn" data-bid="4H">4♥</button>
+                    <button class="bid-btn" data-bid="4S">4♠</button>
+                    <button class="bid-btn" data-bid="4NT">4NT</button>
+                    <button class="bid-btn" data-bid="5C">5♣</button>
+                    <button class="bid-btn" data-bid="5D">5♦</button>
+                    <button class="bid-btn" data-bid="5H">5♥</button>
+                    <button class="bid-btn" data-bid="5S">5♠</button>
+                    <button class="bid-btn" data-bid="5NT">5NT</button>
+                    <button class="bid-btn" data-bid="6C">6♣</button>
+                    <button class="bid-btn" data-bid="6D">6♦</button>
+                    <button class="bid-btn" data-bid="6H">6♥</button>
+                    <button class="bid-btn" data-bid="6S">6♠</button>
+                    <button class="bid-btn" data-bid="6NT">6NT</button>
+                    <button class="bid-btn" data-bid="7C">7♣</button>
+                    <button class="bid-btn" data-bid="7D">7♦</button>
+                    <button class="bid-btn" data-bid="7H">7♥</button>
+                    <button class="bid-btn" data-bid="7S">7♠</button>
+                    <button class="bid-btn" data-bid="7NT">7NT</button>
+                </div>
+                <div class="bidding-history" id="bidding-history"></div>
+            </div>
+        </div>
+
+        <div class="game-board">
+            <!-- Nord -->
+            <div class="player-area player-north">
+                <div class="player-name" id="north-name">Nord</div>
+                <div class="player-hand" id="north-hand"></div>
+                <div class="player-bid" id="north-bid"></div>
+                <div class="player-trick" id="north-trick"></div>
+            </div>
+
+            <!-- Väst (robot) -->
+            <div class="player-area player-west">
+                <div class="player-name">Väst (Robot)</div>
+                <div class="player-hand" id="west-hand"></div>
+                <div class="player-bid" id="west-bid"></div>
+                <div class="player-trick" id="west-trick"></div>
+            </div>
+
+            <!-- Öst (robot) -->
+            <div class="player-area player-east">
+                <div class="player-name">Öst (Robot)</div>
+                <div class="player-hand" id="east-hand"></div>
+                <div class="player-bid" id="east-bid"></div>
+                <div class="player-trick" id="east-trick"></div>
+            </div>
+
+            <!-- Syd -->
+            <div class="player-area player-south">
+                <div class="player-name" id="south-name">Syd (Du)</div>
+                <div class="player-hand" id="south-hand"></div>
+                <div class="player-bid" id="south-bid"></div>
+                <div class="player-trick" id="south-trick"></div>
+            </div>
+
+            <!-- Centrum - stick -->
+            <div class="center-area">
+                <div class="trick-area" id="trick-area"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="new-game-btn" class="control-btn">Nytt Spel</button>
+            <button id="deal-btn" class="control-btn">Dela Kort</button>
+            <div class="score">
+                <span class="label">Poäng:</span>
+                <span id="score">NS: 0 - EW: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Moduler i rätt ordning -->
+    <script src="cards.js"></script>
+    <script src="cardLogic.js"></script>
+    <script src="bidding.js"></script>
+    <script src="ai.js"></script>
+    <script src="scoring.js"></script>
+    <script src="ui.js"></script>
+    <script src="bridge-game.js"></script>
+</body>
+</html>
+
