@@ -14,6 +14,7 @@ class BridgeUI {
             'S': 'south-bid',
             'W': 'west-bid'
         };
+        this.debugMode = false;
     }
 
     // Uppdatera spelarens hand
@@ -26,20 +27,18 @@ class BridgeUI {
         
         handEl.innerHTML = '';
         
-        if (isRobot && !isDummy) {
-            // Visa antal kort för robotar (men inte dummy)
-            const countEl = document.createElement('div');
-            countEl.textContent = `${hand.length} kort`;
-            countEl.style.fontSize = '0.9em';
-            countEl.style.color = '#666';
-            handEl.appendChild(countEl);
-        } else {
-            // Visa kort för spelaren eller dummy
+        // I debug-mode, visa alla kort oavsett om det är robot eller inte
+        if (this.debugMode || !isRobot || isDummy) {
+            // Visa kort för spelaren, dummy eller i debug-mode
             hand.forEach(card => {
                 const cardEl = document.createElement('div');
                 cardEl.className = `card ${card.isRed() ? 'red' : 'black'}`;
                 if (isDummy) {
                     cardEl.classList.add('dummy-card');
+                }
+                if (this.debugMode && isRobot && !isDummy) {
+                    // Markera robot-kort i debug-mode med en särskild stil
+                    cardEl.classList.add('debug-card');
                 }
                 cardEl.textContent = card.toString();
                 // Spara kortdata i data-attribut för att kunna identifiera kortet
@@ -47,6 +46,13 @@ class BridgeUI {
                 cardEl.dataset.rank = card.rank;
                 handEl.appendChild(cardEl);
             });
+        } else {
+            // Visa antal kort för robotar (men inte dummy och inte i debug-mode)
+            const countEl = document.createElement('div');
+            countEl.textContent = `${hand.length} kort`;
+            countEl.style.fontSize = '0.9em';
+            countEl.style.color = '#666';
+            handEl.appendChild(countEl);
         }
         
         // Uppdatera HP-poäng för Syd
@@ -57,27 +63,41 @@ class BridgeUI {
     
     // Uppdatera HP-poäng för en spelare
     updateHP(player, hand) {
-        let hpEl;
-        let otherHpEl;
+        const hpElements = {
+            'N': 'north-hp',
+            'E': 'east-hp',
+            'S': 'south-hp',
+            'W': 'west-hp'
+        };
         
-        if (player === 'S') {
-            hpEl = document.getElementById('south-hp');
-            otherHpEl = document.getElementById('north-hp');
-        } else if (player === 'N') {
-            hpEl = document.getElementById('north-hp');
-            otherHpEl = document.getElementById('south-hp');
-        } else {
-            return; // Bara visa för Syd eller Nord
-        }
-        
+        const hpEl = document.getElementById(hpElements[player]);
         if (!hpEl) return;
         
-        // Visa HP-elementet för aktuell spelare, dölj för den andra
-        if (hpEl) {
+        // I debug-mode, visa HP för alla spelare
+        // Annars bara visa för Syd eller Nord (spelförare)
+        if (this.debugMode) {
             hpEl.style.display = 'block';
-        }
-        if (otherHpEl) {
-            otherHpEl.style.display = 'none';
+        } else {
+            // Normalt läge: visa bara för Syd eller Nord (spelförare)
+            if (player === 'S') {
+                hpEl.style.display = 'block';
+                // Dölj Nord om Syd är spelare
+                const northHpEl = document.getElementById('north-hp');
+                if (northHpEl) {
+                    northHpEl.style.display = 'none';
+                }
+            } else if (player === 'N') {
+                hpEl.style.display = 'block';
+                // Dölj Syd om Nord är spelare
+                const southHpEl = document.getElementById('south-hp');
+                if (southHpEl) {
+                    southHpEl.style.display = 'none';
+                }
+            } else {
+                // Dölj för Öst och Väst i normalt läge
+                hpEl.style.display = 'none';
+                return;
+            }
         }
         
         if (hand && hand.length > 0) {
@@ -325,15 +345,37 @@ class BridgeUI {
     }
 
     // Initiera kontrollknappar
-    initializeControlButtons(onNewGame, onDealCards) {
+    initializeControlButtons(onNewGame, onDealCards, onDebugToggle) {
         const newGameBtn = document.getElementById('new-game-btn');
         const dealBtn = document.getElementById('deal-btn');
+        const debugBtn = document.getElementById('debug-btn');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', onNewGame);
         }
         if (dealBtn) {
             dealBtn.addEventListener('click', onDealCards);
+        }
+        if (debugBtn) {
+            debugBtn.addEventListener('click', () => {
+                this.toggleDebugMode();
+                if (onDebugToggle) {
+                    onDebugToggle(this.debugMode);
+                }
+            });
+        }
+    }
+    
+    // Toggle debug-mode
+    toggleDebugMode() {
+        this.debugMode = !this.debugMode;
+        const debugBtn = document.getElementById('debug-btn');
+        if (debugBtn) {
+            if (this.debugMode) {
+                debugBtn.classList.add('active');
+            } else {
+                debugBtn.classList.remove('active');
+            }
         }
     }
 
@@ -376,14 +418,36 @@ class BridgeUI {
             this.updateHand(playerId, player.cards, player.isRobot, player.isDummy || false);
         });
         
-        // Uppdatera HP-poäng för spelaren (Syd eller Nord om de är spelförare)
-        if (declarer === 'N' && players['N'] && players['N'].cards) {
-            this.updateHP('N', players['N'].cards);
-        } else if (declarer === 'S' && players['S'] && players['S'].cards) {
-            this.updateHP('S', players['S'].cards);
-        } else if (!declarer && players['S'] && players['S'].cards) {
-            // Under budgivning, visa HP för Syd
-            this.updateHP('S', players['S'].cards);
+        // Uppdatera HP-poäng
+        if (this.debugMode) {
+            // I debug-mode, visa HP för alla spelare
+            Object.keys(players).forEach(playerId => {
+                const player = players[playerId];
+                if (player.cards) {
+                    this.updateHP(playerId, player.cards);
+                }
+            });
+        } else {
+            // Normalt läge: visa HP för spelaren (Syd eller Nord om de är spelförare)
+            // Dölj explicit HP för Öst och Väst
+            const eastHpEl = document.getElementById('east-hp');
+            const westHpEl = document.getElementById('west-hp');
+            if (eastHpEl) {
+                eastHpEl.style.display = 'none';
+            }
+            if (westHpEl) {
+                westHpEl.style.display = 'none';
+            }
+            
+            // Visa HP för spelaren/spelföraren
+            if (declarer === 'N' && players['N'] && players['N'].cards) {
+                this.updateHP('N', players['N'].cards);
+            } else if (declarer === 'S' && players['S'] && players['S'].cards) {
+                this.updateHP('S', players['S'].cards);
+            } else if (!declarer && players['S'] && players['S'].cards) {
+                // Under budgivning, visa HP för Syd
+                this.updateHP('S', players['S'].cards);
+            }
         }
         
         // Uppdatera budgivning

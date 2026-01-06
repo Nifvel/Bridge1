@@ -34,7 +34,11 @@ class BridgeGame {
     initializeUI() {
         this.ui.initializeControlButtons(
             () => this.newGame(),
-            () => this.dealCards()
+            () => this.dealCards(),
+            (debugMode) => {
+                // När debug-mode togglas, uppdatera UI för att visa/dölja kort
+                this.updateUI();
+            }
         );
         
         this.ui.initializeBiddingButtons((bid) => {

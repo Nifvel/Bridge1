@@ -379,6 +379,24 @@ header h1 {
     box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
 
+.debug-btn {
+    background: #ff9800;
+}
+
+.debug-btn:hover {
+    background: #f57c00;
+}
+
+.debug-btn.active {
+    background: #f57c00;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+.debug-card {
+    border: 2px dashed #ff9800;
+    opacity: 0.9;
+}
+
 .score {
     font-size: 1.1em;
     font-weight: bold;

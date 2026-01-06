@@ -85,6 +85,7 @@
             <!-- Väst (robot) -->
             <div class="player-area player-west">
                 <div class="player-name">Väst (Robot)</div>
+                <div class="player-hp" id="west-hp" style="display: none;">HP: -</div>
                 <div class="player-hand" id="west-hand"></div>
                 <div class="player-bid" id="west-bid"></div>
                 <div class="player-trick" id="west-trick"></div>
@@ -93,6 +94,7 @@
             <!-- Öst (robot) -->
             <div class="player-area player-east">
                 <div class="player-name">Öst (Robot)</div>
+                <div class="player-hp" id="east-hp" style="display: none;">HP: -</div>
                 <div class="player-hand" id="east-hand"></div>
                 <div class="player-bid" id="east-bid"></div>
                 <div class="player-trick" id="east-trick"></div>
@@ -116,6 +118,7 @@
         <div class="controls">
             <button id="new-game-btn" class="control-btn">Nytt Spel</button>
             <button id="deal-btn" class="control-btn">Dela Kort</button>
+            <button id="debug-btn" class="control-btn debug-btn">Debug</button>
             <div class="score">
                 <span class="label">Poäng:</span>
                 <span id="score">NS: 0 - EW: 0</span>
